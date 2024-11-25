@@ -4,9 +4,8 @@ char arrSprintf[10];
 const uint8_t mainLine[] = "*****************************\n";
 const uint8_t extraLine[] = "*      *      *      *      *\n";
 
-extern int gameScore;
+void drawGame(int arr[], int gameScore) {
 
-void drawGame(int arr[]) {
 	int gameArrVal = 0;
 	PRINT_DATA(mainLine);
 	PRINT_DATA(extraLine);

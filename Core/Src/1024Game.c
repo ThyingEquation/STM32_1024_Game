@@ -31,209 +31,213 @@ const uint8_t loseLogo[] = "\n\n\n _      ____   _____ ______ _\n"
 const uint8_t gameControls[] =
 		"=== Game controls (send next characters): start new game 'r'; left shift 'a'; right shift 'd'; top shift 'w'; down shift 's' ===\n\n";
 
-int gameArr[] = { 0, 0, 0, 0, /**/0, 0, 0, 0, /**/0, 0, 0, 0, /**/0, 0, 0, 0 }; //главный
-//int gameArr[] = { 512, 0, 512, 0, /**/0, 0, 0, 0, /**/0, 0, 0, 0, /**/0, 0, 0, 0 }; // тест победы
-//int gameArr[] = { 32, 16, 4, 1, /**/16, 8, 1, 8, /**/8, 2, 8, 2, /**/2, 8, 2, 1 }; // тест поражения !!!!!!!!!! ОБЯЗАТЕЛЬНО ЗАКОММЕНТИТЬ (~185 строка) цикл спавна новых чисел в "r" !!!!!!!!!
-
 int shiftArr[16];
 
-int gameScore = 0;
+void shiftArrProcessing(gameField *p);
 
-uint8_t startBit = 0;
-uint8_t winBit = 0;
-uint8_t moveNumCount = 0;
+void leftShift(gameField *p);
+void rightShift(gameField *p);
+void upShift(gameField *p);
+void downShift(gameField *p);
 
-uint8_t noUpMovement = 0;
-uint8_t noDownMovement = 0;
-uint8_t noLeftMovement = 0;
-uint8_t noRightMovement = 0;
+void fullGameReload(gameField *p);
 
-void shift(uint8_t i, uint8_t max);
-uint8_t randomNum();
+void shift(uint8_t i, uint8_t max, gameField *p);
+void shiftSumm(uint8_t i, uint8_t max, gameField *p);
+
 uint8_t choosingANumber();
 
-void shiftMain(char mode) {
+void shiftMain(char mode, gameField *p) {
 
-	if (startBit == 1) {
+	if (p->startBit == 1) {
 		if (mode == 'a') {
-			memcpy(shiftArr, gameArr, sizeof(gameArr));
+			leftShift(p);
 		} else if (mode == 'd') {
-			for (int i = 0; i < 4; ++i) {
-				shiftArr[i] = gameArr[3 - i];
-				shiftArr[i + 4] = gameArr[7 - i];
-				shiftArr[i + 8] = gameArr[11 - i];
-				shiftArr[i + 12] = gameArr[15 - i];
-			}
+			rightShift(p);
 		} else if (mode == 'w') {
-			for (int i = 0; i < 4; ++i) {
-				shiftArr[i] = gameArr[i * 4];
-				shiftArr[i + 4] = gameArr[i * 4 + 1];
-				shiftArr[i + 8] = gameArr[i * 4 + 2];
-				shiftArr[i + 12] = gameArr[i * 4 + 3];
-			}
+			upShift(p);
 		} else if (mode == 's') {
-			for (int i = 0; i < 4; ++i) {
-				shiftArr[i] = gameArr[12 - i * 4];
-				shiftArr[i + 4] = gameArr[13 - i * 4];
-				shiftArr[i + 8] = gameArr[14 - i * 4];
-				shiftArr[i + 12] = gameArr[15 - i * 4];
-			}
+			downShift(p);
 		} else if (mode == 'r') {
-			memset(gameArr, 0, sizeof(gameArr));
-			PRINT_DATA(gameLogo);
-			PRINT_DATA(gameControls);
-			startBit = 1;
-			winBit = 0;
-			gameScore = 0;
-
-			for (uint8_t i = 0; i < 2; ++i) {
-				uint8_t a = 0;
-
-				do {
-					a = randomNum();
-				} while (gameArr[a] != 0);
-
-				gameArr[a] = choosingANumber();
-
-			}
-
-			drawGame(gameArr);
+			fullGameReload(p);
 			return;
 		}
 
-		moveNumCount = 0;
-		for (uint8_t i = 0; i < 13; i = i + 4) {
-			if (shiftArr[i] != 0 || shiftArr[i + 1] != 0 || shiftArr[i + 2] != 0
-					|| shiftArr[i + 3] != 0) {
-				shift(i, i + 3);
-			}
-		}
-
-		if (mode == 'a') {
-
-			if (moveNumCount == 0) {
-				noLeftMovement = 1;
-			} else {
-				noLeftMovement = 0;
-			}
-
-			memcpy(gameArr, shiftArr, sizeof(gameArr));
-		} else if (mode == 'd') {
-			if (moveNumCount == 0) {
-				noRightMovement = 1;
-			} else {
-				noRightMovement = 0;
-			}
-			for (int i = 0; i < 4; ++i) {
-				gameArr[3 - i] = shiftArr[i];
-				gameArr[7 - i] = shiftArr[i + 4];
-				gameArr[11 - i] = shiftArr[i + 8];
-				gameArr[15 - i] = shiftArr[i + 12];
-			}
-		} else if (mode == 'w') {
-			if (moveNumCount == 0) {
-				noUpMovement = 1;
-			} else {
-				noUpMovement = 0;
-			}
-			for (int i = 0; i < 4; ++i) {
-				gameArr[i * 4] = shiftArr[i];
-				gameArr[i * 4 + 1] = shiftArr[i + 4];
-				gameArr[i * 4 + 2] = shiftArr[i + 8];
-				gameArr[i * 4 + 3] = shiftArr[i + 12];
-			}
-		} else if (mode == 's') {
-			if (moveNumCount == 0) {
-				noDownMovement = 1;
-			} else {
-				noDownMovement = 0;
-			}
-			for (int i = 0; i < 4; ++i) {
-				gameArr[12 - i * 4] = shiftArr[i];
-				gameArr[13 - i * 4] = shiftArr[i + 4];
-				gameArr[14 - i * 4] = shiftArr[i + 8];
-				gameArr[15 - i * 4] = shiftArr[i + 12];
-			}
-		}
-
-		if (moveNumCount > 0) {
+		if (p->moveNumCount > 0) {
 			uint8_t a = 0;
 
 			do {
-				a = randomNum();
-			} while (gameArr[a] != 0);
+				a = rand() % 16;
 
-			gameArr[a] = choosingANumber();
+			} while (p->gameArr[a] != 0);
+
+			p->gameArr[a] = choosingANumber();
 		}
 
-		drawGame(gameArr);
+		drawGame(p->gameArr, p->gameScore);
 
-		if (winBit == 1) {
-			memset(gameArr, 0, sizeof(gameArr));
-			startBit = 0;
-			winBit = 0;
-			gameScore = 0;
+		if (p->winBit == 1) {
+			memset(p->gameArr, 0, sizeof(p->gameArr));
+			p->startBit = 0;
+			p->winBit = 0;
+			p->gameScore = 0;
 			PRINT_DATA(winLogo);
 		}
 
-		if (noUpMovement == 1 && noDownMovement == 1 && noLeftMovement == 1
-				&& noRightMovement == 1) {
-			memset(gameArr, 0, sizeof(gameArr));
-			startBit = 0;
-			gameScore = 0;
+		if (p->noUpMovement == 1 && p->noDownMovement == 1
+				&& p->noLeftMovement == 1 && p->noRightMovement == 1) {
+			memset(p->gameArr, 0, sizeof(p->gameArr));
+			p->startBit = 0;
+			p->gameScore = 0;
 			PRINT_DATA(loseLogo);
 		}
 
 	} else {
 		if (mode == 'r') {
-			PRINT_DATA(gameLogo);
-			PRINT_DATA(gameControls);
-			startBit = 1;
-
-			for (uint8_t i = 0; i < 2; ++i) { // !!!!!!!!!! ОБЯЗАТЕЛЬНО ЗАКОММЕНТИТЬ цикл для теста поражения
-				uint8_t a = 0;
-
-				do {
-					a = randomNum();
-				} while (gameArr[a] != 0);
-
-				gameArr[a] = choosingANumber();
-
-			}
-
-			drawGame(gameArr);
-
+			fullGameReload(p);
 		} else {
 			PRINT_DATA(gameStartText);
 		}
 	}
 }
 
-void shift(uint8_t i, uint8_t max) {
-	if (shiftArr[i] == 0) {
+void shiftArrProcessing(gameField *p) {
+	p->moveNumCount = 0;
+	for (uint8_t i = 0; i < 13; i = i + 4) {
+		if (shiftArr[i] != 0 || shiftArr[i + 1] != 0 || shiftArr[i + 2] != 0
+				|| shiftArr[i + 3] != 0) {
+			shift(i, i + 3, p);
+		}
+	}
+}
 
+void leftShift(gameField *p) {
+
+	memcpy(shiftArr, p->gameArr, sizeof(p->gameArr));
+
+	shiftArrProcessing(p);
+
+	if (p->moveNumCount == 0) {
+		p->noLeftMovement = 1;
+	} else {
+		p->noLeftMovement = 0;
+	}
+
+	memcpy(p->gameArr, shiftArr, sizeof(p->gameArr));
+}
+
+void rightShift(gameField *p) {
+
+	for (int i = 0; i < 4; ++i) {
+		shiftArr[i] = p->gameArr[3 - i];
+		shiftArr[i + 4] = p->gameArr[7 - i];
+		shiftArr[i + 8] = p->gameArr[11 - i];
+		shiftArr[i + 12] = p->gameArr[15 - i];
+	}
+
+	shiftArrProcessing(p);
+
+	if (p->moveNumCount == 0) {
+		p->noRightMovement = 1;
+	} else {
+		p->noRightMovement = 0;
+	}
+	for (int i = 0; i < 4; ++i) {
+		p->gameArr[3 - i] = shiftArr[i];
+		p->gameArr[7 - i] = shiftArr[i + 4];
+		p->gameArr[11 - i] = shiftArr[i + 8];
+		p->gameArr[15 - i] = shiftArr[i + 12];
+	}
+}
+
+void upShift(gameField *p) {
+	for (int i = 0; i < 4; ++i) {
+		shiftArr[i] = p->gameArr[i * 4];
+		shiftArr[i + 4] = p->gameArr[i * 4 + 1];
+		shiftArr[i + 8] = p->gameArr[i * 4 + 2];
+		shiftArr[i + 12] = p->gameArr[i * 4 + 3];
+	}
+
+	shiftArrProcessing(p);
+
+	if (p->moveNumCount == 0) {
+		p->noUpMovement = 1;
+	} else {
+		p->noUpMovement = 0;
+	}
+	for (int i = 0; i < 4; ++i) {
+		p->gameArr[i * 4] = shiftArr[i];
+		p->gameArr[i * 4 + 1] = shiftArr[i + 4];
+		p->gameArr[i * 4 + 2] = shiftArr[i + 8];
+		p->gameArr[i * 4 + 3] = shiftArr[i + 12];
+	}
+}
+
+void downShift(gameField *p) {
+	for (int i = 0; i < 4; ++i) {
+		shiftArr[i] = p->gameArr[12 - i * 4];
+		shiftArr[i + 4] = p->gameArr[13 - i * 4];
+		shiftArr[i + 8] = p->gameArr[14 - i * 4];
+		shiftArr[i + 12] = p->gameArr[15 - i * 4];
+	}
+
+	shiftArrProcessing(p);
+
+	if (p->moveNumCount == 0) {
+		p->noDownMovement = 1;
+	} else {
+		p->noDownMovement = 0;
+	}
+	for (int i = 0; i < 4; ++i) {
+		p->gameArr[12 - i * 4] = shiftArr[i];
+		p->gameArr[13 - i * 4] = shiftArr[i + 4];
+		p->gameArr[14 - i * 4] = shiftArr[i + 8];
+		p->gameArr[15 - i * 4] = shiftArr[i + 12];
+	}
+}
+
+void fullGameReload(gameField *p) {
+	memset(p->gameArr, 0, sizeof(p->gameArr));
+	PRINT_DATA(gameLogo);
+	PRINT_DATA(gameControls);
+	p->startBit = 1;
+	p->winBit = 0;
+	p->gameScore = 0;
+
+	for (uint8_t i = 0; i < 2; ++i) { // !!!!!!!!!! ОБЯЗАТЕЛЬНО ЗАКОММЕНТИТЬ цикл для теста поражения
+		uint8_t a = 0;
+
+		do {
+			a = rand() % 16;
+			;
+		} while (p->gameArr[a] != 0);
+
+		p->gameArr[a] = choosingANumber();
+
+	}
+
+	drawGame(p->gameArr, p->gameScore);
+}
+
+void shift(uint8_t i, uint8_t max, gameField *p) {
+	if (shiftArr[i] == 0) {
 		if (shiftArr[i + 1] != 0) {
-			++moveNumCount;
+			p->moveNumCount++;
 			shiftArr[i] = shiftArr[i + 1];
 			shiftArr[i + 1] = 0;
 		}
-
 		if (i + 2 <= max) {
-
 			if (shiftArr[i + 2] != 0) {
-				++moveNumCount;
+				p->moveNumCount++;
 				shiftArr[i + 1] = shiftArr[i + 2];
 				shiftArr[i + 2] = 0;
 			}
-
 			if (i + 3 <= max) {
-
 				if (shiftArr[i + 3] != 0) {
-					++moveNumCount;
+					p->moveNumCount++;
 					shiftArr[i + 2] = shiftArr[i + 3];
 					shiftArr[i + 3] = 0;
 				}
-
 			} else {
 				if (shiftArr[i + 1] == 0 && shiftArr[i + 2] == 0) {
 					return;
@@ -244,64 +248,56 @@ void shift(uint8_t i, uint8_t max) {
 				return;
 			}
 		}
-
-		shift(i, max);
+		shift(i, max, p);
 	} else {
 
-		if (i + 1 <= max && shiftArr[i + 1] != 0) {
-			if (shiftArr[i] == shiftArr[i + 1]) {
-				++moveNumCount;
-				shiftArr[i] = shiftArr[i] + shiftArr[i + 1];
-				gameScore += shiftArr[i];
-				if (shiftArr[i] == 1024) {
-					winBit = 1;
-				}
-				shiftArr[i + 1] = 0;
-			}
-		} else if (i + 2 <= max && shiftArr[i + 2] != 0) {
-			if (shiftArr[i] == shiftArr[i + 2]) {
-				++moveNumCount;
-				shiftArr[i] = shiftArr[i] + shiftArr[i + 2];
-				gameScore += shiftArr[i];
-				if (shiftArr[i] == 1024) {
-					winBit = 1;
-				}
-				shiftArr[i + 2] = 0;
-			}
-		} else if (i + 3 <= max && shiftArr[i + 3] != 0) {
-			if (shiftArr[i] == shiftArr[i + 3]) {
-				++moveNumCount;
-				shiftArr[i] = shiftArr[i] + shiftArr[i + 3];
-				gameScore += shiftArr[i];
-				if (shiftArr[i] == 1024) {
-					winBit = 1;
-				}
-				shiftArr[i + 3] = 0;
-			}
-		}
+		shiftSumm(i, max, p);
 
 		if (i + 1 < max) {
-			shift(i + 1, max);
+			shift(i + 1, max, p);
 		}
 	}
-
 	return;
 }
 
-uint8_t randomNum() {
+void shiftSumm(uint8_t i, uint8_t max, gameField *p) {
 
-	uint8_t randNum = getADCValue() % 100;
-
-	if (randNum > 15) {
-		randNum = randNum % 16;
+	if (i + 1 <= max && shiftArr[i + 1] != 0) {
+		if (shiftArr[i] == shiftArr[i + 1]) {
+			p->moveNumCount++;
+			shiftArr[i] = shiftArr[i] + shiftArr[i + 1];
+			p->gameScore += shiftArr[i];
+			if (shiftArr[i] == 1024) {
+				p->winBit = 1;
+			}
+			shiftArr[i + 1] = 0;
+		}
+	} else if (i + 2 <= max && shiftArr[i + 2] != 0) {
+		if (shiftArr[i] == shiftArr[i + 2]) {
+			p->moveNumCount++;
+			shiftArr[i] = shiftArr[i] + shiftArr[i + 2];
+			p->gameScore += shiftArr[i];
+			if (shiftArr[i] == 1024) {
+				p->winBit = 1;
+			}
+			shiftArr[i + 2] = 0;
+		}
+	} else if (i + 3 <= max && shiftArr[i + 3] != 0) {
+		if (shiftArr[i] == shiftArr[i + 3]) {
+			p->moveNumCount++;
+			shiftArr[i] = shiftArr[i] + shiftArr[i + 3];
+			p->gameScore += shiftArr[i];
+			if (shiftArr[i] == 1024) {
+				p->winBit = 1;
+			}
+			shiftArr[i + 3] = 0;
+		}
 	}
-
-	return randNum;
 }
 
 uint8_t choosingANumber() {
 
-	uint8_t chNum = getADCValue() % 100;
+	uint8_t chNum = rand() % 100;
 
 	if (chNum <= 89) {
 		return 1;

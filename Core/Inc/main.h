@@ -33,12 +33,12 @@ extern "C" {
 /* USER CODE BEGIN Includes */
 #include "usb_device.h"
 #include "string.h"
-//#include "time.h" // альтернативная реализация псевдослучайных чисел (из моего примера по С++)
 #include "1024Game.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
+
 
 /* USER CODE END ET */
 
@@ -56,7 +56,7 @@ extern "C" {
 void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
-uint32_t getADCValue();
+
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/

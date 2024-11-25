@@ -104,8 +104,34 @@ int main(void) {
 	MX_ADC1_Init();
 	/* USER CODE BEGIN 2 */
 
-	// int temp0 = rand()%16; // альтернативная реализация псевдослучайных чисел (из моего примера по С++)
-	// srand(time(0));
+	uint32_t initRandomNum = 0;
+
+	for (int i = 0; i < 32; i++) {
+		uint32_t adcVal = getADCValue();
+		uint8_t oneBit = adcVal & 0x1;
+		initRandomNum = (initRandomNum << 1) | oneBit;
+	}
+
+	srand(initRandomNum);
+
+	gameField gameField1;
+
+	//int gameArr[] = { 512, 0, 512, 0, /**/0, 0, 0, 0, /**/0, 0, 0, 0, /**/0, 0, 0, 0 }; // тест победы
+	//int gameArr[] = { 32, 16, 4, 1, /**/16, 8, 1, 8, /**/8, 2, 8, 2, /**/2, 8, 2, 1 }; // тест поражения !!!!!!!!!! ОБЯЗАТЕЛЬНО ЗАКОММЕНТИТЬ (~185 строка) цикл спавна новых чисел в "r" !!!!!!!!!
+
+	memset(gameField1.gameArr, 0, sizeof(gameField1.gameArr));
+
+	gameField1.gameScore = 0;
+
+	gameField1.startBit = 0;
+	gameField1.winBit = 0;
+	gameField1.moveNumCount = 0;
+
+	gameField1.noUpMovement = 0;
+	gameField1.noDownMovement = 0;
+	gameField1.noLeftMovement = 0;
+	gameField1.noRightMovement = 0;
+
 	/* USER CODE END 2 */
 
 	/* Infinite loop */
@@ -113,7 +139,7 @@ int main(void) {
 	while (1) {
 
 		if (buffer[0] != '\0') {
-			shiftMain(buffer[0]);
+			shiftMain(buffer[0], &gameField1);
 			memset(buffer, '\0', sizeof(buffer));
 		}
 
