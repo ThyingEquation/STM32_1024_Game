@@ -1,52 +1,37 @@
 #include "draw.h"
 
-char arrSprintf[10];
-const uint8_t mainLine[] = "*****************************\n";
-const uint8_t extraLine[] = "*      *      *      *      *\n";
-
 void drawGame(int arr[], int gameScore) {
 
-	int gameArrVal = 0;
-	PRINT_DATA(mainLine);
-	PRINT_DATA(extraLine);
-	PRINT_DATA((uint8_t* )"* ");
+	char arrSprintf[32];
+
+	PRINT_DATA(
+			"*****************************\n*      *      *      *      *\n* ");
 	for (uint8_t i = 0; i < 16; i++) {
-		gameArrVal = arr[i];
-
-		if (gameArrVal > 1000) {
-			sprintf(arrSprintf, "%d", gameArrVal);
+		if (arr[i] > 1000) {
+			sprintf(arrSprintf, "%d * ", arr[i]);
 			PRINT_DATA(arrSprintf);
-			PRINT_DATA(" * ");
 		} else {
-
-			if (gameArrVal == 0) {
+			if (arr[i] == 0) {
 				PRINT_DATA("     * ");
 			} else {
-				sprintf(arrSprintf, " %d", gameArrVal);
-				PRINT_DATA(arrSprintf);
-				if (gameArrVal < 10) {
-					PRINT_DATA("   * ");
-				} else if (gameArrVal < 100) {
-					PRINT_DATA("  * ");
+				if (arr[i] < 10) {
+					sprintf(arrSprintf, " %d   * ", arr[i]);
+				} else if (arr[i] < 100) {
+					sprintf(arrSprintf, " %d  * ", arr[i]);
 				} else {
-					PRINT_DATA(" * ");
+					sprintf(arrSprintf, " %d * ", arr[i]);
 				}
+				PRINT_DATA(arrSprintf);
 			}
 		}
-
 		if ((i + 1) % 4 == 0) {
-			PRINT_DATA("\n");
-			PRINT_DATA(extraLine);
-			PRINT_DATA(mainLine);
-
+			PRINT_DATA(
+					"\n*      *      *      *      *\n*****************************\n");
 			if (i != 15) {
-				PRINT_DATA(extraLine);
-				PRINT_DATA("* ");
+				PRINT_DATA("*      *      *      *      *\n* ");
 			}
 		}
 	}
-	PRINT_DATA("Score: ");
-	sprintf(arrSprintf, "%d", gameScore);
+	sprintf(arrSprintf, "## Total score: %d ##\n\n\n", gameScore);
 	PRINT_DATA(arrSprintf);
-
 }

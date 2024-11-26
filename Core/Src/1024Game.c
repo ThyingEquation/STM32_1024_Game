@@ -43,7 +43,6 @@ void downShift(gameField *p);
 void fullGameReload(gameField *p);
 
 void shift(uint8_t i, uint8_t max, gameField *p);
-void shiftSumm(uint8_t i, uint8_t max, gameField *p);
 
 uint8_t choosingANumber();
 
@@ -63,7 +62,7 @@ void shiftMain(char mode, gameField *p) {
 			return;
 		}
 
-		if (p->moveNumCount > 0) {
+		if (p->moveNumCount > 0) { // Новое число
 			uint8_t a = 0;
 
 			do {
@@ -101,6 +100,7 @@ void shiftMain(char mode, gameField *p) {
 	}
 }
 
+// Функция обработки "сдвигового" массива
 void shiftArrProcessing(gameField *p) {
 	p->moveNumCount = 0;
 	for (uint8_t i = 0; i < 13; i = i + 4) {
@@ -204,7 +204,7 @@ void fullGameReload(gameField *p) {
 	p->winBit = 0;
 	p->gameScore = 0;
 
-	for (uint8_t i = 0; i < 2; ++i) { // !!!!!!!!!! ОБЯЗАТЕЛЬНО ЗАКОММЕНТИТЬ цикл для теста поражения
+	for (uint8_t i = 0; i < 2; ++i) {
 		uint8_t a = 0;
 
 		do {
@@ -219,6 +219,7 @@ void fullGameReload(gameField *p) {
 	drawGame(p->gameArr, p->gameScore);
 }
 
+// Рекурсивная функция сдвига и сложения чисел в указанную сторону
 void shift(uint8_t i, uint8_t max, gameField *p) {
 	if (shiftArr[i] == 0) {
 		if (shiftArr[i + 1] != 0) {
@@ -250,8 +251,20 @@ void shift(uint8_t i, uint8_t max, gameField *p) {
 		}
 		shift(i, max, p);
 	} else {
-
-		shiftSumm(i, max, p);
+		for (uint8_t j = 1; j <= 3; ++j) {
+			if (i + j <= max && shiftArr[i + j] != 0) {
+				if (shiftArr[i] == shiftArr[i + j]) {
+					p->moveNumCount++;
+					shiftArr[i] += shiftArr[i + j];
+					p->gameScore += shiftArr[i];
+					if (shiftArr[i] == p->difficulty) {
+						p->winBit = 1;
+					}
+					shiftArr[i + j] = 0;
+				}
+				break;
+			}
+		}
 
 		if (i + 1 < max) {
 			shift(i + 1, max, p);
@@ -260,41 +273,7 @@ void shift(uint8_t i, uint8_t max, gameField *p) {
 	return;
 }
 
-void shiftSumm(uint8_t i, uint8_t max, gameField *p) {
-
-	if (i + 1 <= max && shiftArr[i + 1] != 0) {
-		if (shiftArr[i] == shiftArr[i + 1]) {
-			p->moveNumCount++;
-			shiftArr[i] = shiftArr[i] + shiftArr[i + 1];
-			p->gameScore += shiftArr[i];
-			if (shiftArr[i] == 1024) {
-				p->winBit = 1;
-			}
-			shiftArr[i + 1] = 0;
-		}
-	} else if (i + 2 <= max && shiftArr[i + 2] != 0) {
-		if (shiftArr[i] == shiftArr[i + 2]) {
-			p->moveNumCount++;
-			shiftArr[i] = shiftArr[i] + shiftArr[i + 2];
-			p->gameScore += shiftArr[i];
-			if (shiftArr[i] == 1024) {
-				p->winBit = 1;
-			}
-			shiftArr[i + 2] = 0;
-		}
-	} else if (i + 3 <= max && shiftArr[i + 3] != 0) {
-		if (shiftArr[i] == shiftArr[i + 3]) {
-			p->moveNumCount++;
-			shiftArr[i] = shiftArr[i] + shiftArr[i + 3];
-			p->gameScore += shiftArr[i];
-			if (shiftArr[i] == 1024) {
-				p->winBit = 1;
-			}
-			shiftArr[i + 3] = 0;
-		}
-	}
-}
-
+// Выбор числа 1 или 2 с вероятностью 90% и 10% соответственно
 uint8_t choosingANumber() {
 
 	uint8_t chNum = rand() % 100;

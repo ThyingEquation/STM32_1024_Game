@@ -1,20 +1,4 @@
 /* USER CODE BEGIN Header */
-/**
- ******************************************************************************
- * @file           : main.c
- * @brief          : Main program body
- ******************************************************************************
- * @attention
- *
- * Copyright (c) 2024 STMicroelectronics.
- * All rights reserved.
- *
- * This software is licensed under terms that can be found in the LICENSE file
- * in the root directory of this software component.
- * If no LICENSE file comes with this software, it is provided AS-IS.
- *
- ******************************************************************************
- */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
@@ -114,14 +98,13 @@ int main(void) {
 
 	srand(initRandomNum);
 
+	// Инициализация игрового поля
 	gameField gameField1;
 
-	//int gameArr1[] = { 512, 0, 512, 0, /**/0, 0, 0, 0, /**/0, 0, 0, 0, /**/0, 0, 0, 0 }; // тест победы
-	//int gameArr2[] = { 32, 16, 4, 1, /**/16, 8, 1, 8, /**/8, 2, 8, 2, /**/2, 8, 2, 1 }; // тест поражения !!!!!!!!!! ОБЯЗАТЕЛЬНО ЗАКОММЕНТИТЬ (~185 строка) цикл спавна новых чисел в "r" !!!!!!!!!
-
-	//memcpy(gameField1.gameArr, gameArr2, sizeof(gameField1.gameArr));
-
 	memset(gameField1.gameArr, 0, sizeof(gameField1.gameArr));
+
+	// Выбор сложности игры: 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 8192. НЕ БОЛЕЕ 8192.
+	gameField1.difficulty = 1024;
 
 	gameField1.gameScore = 0;
 
@@ -139,12 +122,10 @@ int main(void) {
 	/* Infinite loop */
 	/* USER CODE BEGIN WHILE */
 	while (1) {
-
 		if (buffer[0] != '\0') {
 			shiftMain(buffer[0], &gameField1);
 			memset(buffer, '\0', sizeof(buffer));
 		}
-
 		/* USER CODE END WHILE */
 
 		/* USER CODE BEGIN 3 */

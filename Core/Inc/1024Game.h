@@ -6,6 +6,8 @@
 typedef struct {
 	int gameArr[16];
 
+	int difficulty;
+
 	int gameScore;
 
 	uint8_t startBit;
