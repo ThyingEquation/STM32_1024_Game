@@ -98,24 +98,10 @@ int main(void) {
 
 	srand(initRandomNum);
 
-	// Инициализация игрового поля
-	gameField gameField1;
+	// Инициализация игрового поля, все кроме difficulty = 0
+	// Выбор сложности игры: difficulty = 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 8192. НЕ БОЛЕЕ 8192.
 
-	memset(gameField1.gameArr, 0, sizeof(gameField1.gameArr));
-
-	// Выбор сложности игры: 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 8192. НЕ БОЛЕЕ 8192.
-	gameField1.difficulty = 1024;
-
-	gameField1.gameScore = 0;
-
-	gameField1.startBit = 0;
-	gameField1.winBit = 0;
-	gameField1.moveNumCount = 0;
-
-	gameField1.noUpMovement = 0;
-	gameField1.noDownMovement = 0;
-	gameField1.noLeftMovement = 0;
-	gameField1.noRightMovement = 0;
+	gameField gameField1 = {.difficulty = 1024};
 
 	/* USER CODE END 2 */
 
