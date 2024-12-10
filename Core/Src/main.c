@@ -101,7 +101,7 @@ int main(void) {
 	// Инициализация игрового поля, все кроме difficulty = 0
 	// Выбор сложности игры: difficulty = 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 8192. НЕ БОЛЕЕ 8192.
 
-	gameField gameField1 = {.difficulty = 1024};
+	gameField_t gameField1 = {.difficulty = 1024};
 
 	/* USER CODE END 2 */
 

@@ -33,20 +33,20 @@ const uint8_t gameControls[] =
 
 int shiftArr[16];
 
-void shiftArrProcessing(gameField *p);
+void shiftArrProcessing(gameField_t *p);
 
-void leftShift(gameField *p);
-void rightShift(gameField *p);
-void upShift(gameField *p);
-void downShift(gameField *p);
+void leftShift(gameField_t *p);
+void rightShift(gameField_t *p);
+void upShift(gameField_t *p);
+void downShift(gameField_t *p);
 
-void fullGameReload(gameField *p);
+void fullGameReload(gameField_t *p);
 
-void shift(uint8_t i, uint8_t max, gameField *p);
+void shift(uint8_t i, uint8_t max, gameField_t *p);
 
 uint8_t choosingANumber();
 
-void shiftMain(char mode, gameField *p) {
+void shiftMain(char mode, gameField_t *p) {
 
 	if (p->startBit == 1) {
 		if (mode == 'a') {
@@ -101,7 +101,7 @@ void shiftMain(char mode, gameField *p) {
 }
 
 // Функция обработки "сдвигового" массива
-void shiftArrProcessing(gameField *p) {
+void shiftArrProcessing(gameField_t *p) {
 	p->moveNumCount = 0;
 	for (uint8_t i = 0; i < 13; i = i + 4) {
 		if (shiftArr[i] != 0 || shiftArr[i + 1] != 0 || shiftArr[i + 2] != 0
@@ -111,7 +111,7 @@ void shiftArrProcessing(gameField *p) {
 	}
 }
 
-void leftShift(gameField *p) {
+void leftShift(gameField_t *p) {
 
 	memcpy(shiftArr, p->gameArr, sizeof(p->gameArr));
 
@@ -126,7 +126,7 @@ void leftShift(gameField *p) {
 	memcpy(p->gameArr, shiftArr, sizeof(p->gameArr));
 }
 
-void rightShift(gameField *p) {
+void rightShift(gameField_t *p) {
 
 	for (int i = 0; i < 4; ++i) {
 		shiftArr[i] = p->gameArr[3 - i];
@@ -150,7 +150,7 @@ void rightShift(gameField *p) {
 	}
 }
 
-void upShift(gameField *p) {
+void upShift(gameField_t *p) {
 	for (int i = 0; i < 4; ++i) {
 		shiftArr[i] = p->gameArr[i * 4];
 		shiftArr[i + 4] = p->gameArr[i * 4 + 1];
@@ -173,7 +173,7 @@ void upShift(gameField *p) {
 	}
 }
 
-void downShift(gameField *p) {
+void downShift(gameField_t *p) {
 	for (int i = 0; i < 4; ++i) {
 		shiftArr[i] = p->gameArr[12 - i * 4];
 		shiftArr[i + 4] = p->gameArr[13 - i * 4];
@@ -196,7 +196,7 @@ void downShift(gameField *p) {
 	}
 }
 
-void fullGameReload(gameField *p) {
+void fullGameReload(gameField_t *p) {
 	memset(p->gameArr, 0, sizeof(p->gameArr));
 	PRINT_DATA(gameLogo);
 	PRINT_DATA(gameControls);
@@ -220,7 +220,7 @@ void fullGameReload(gameField *p) {
 }
 
 // Рекурсивная функция сдвига и сложения чисел в указанную сторону
-void shift(uint8_t i, uint8_t max, gameField *p) {
+void shift(uint8_t i, uint8_t max, gameField_t *p) {
 	if (shiftArr[i] == 0) {
 		if (shiftArr[i + 1] != 0) {
 			p->moveNumCount++;

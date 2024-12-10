@@ -18,8 +18,8 @@ typedef struct {
 	uint8_t noDownMovement;
 	uint8_t noLeftMovement;
 	uint8_t noRightMovement;
-} gameField;
+} gameField_t;
 
-void shiftMain(char mode, gameField *p);
+void shiftMain(char mode, gameField_t *p);
 
 #endif /* INC_1024GAME_H_ */
